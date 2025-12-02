@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
 import axios from 'axios';
 import './AttendanceResults.css';
@@ -13,6 +13,7 @@ function AttendanceResults({ data, onReset }) {
   const [selectedFaceIndex, setSelectedFaceIndex] = useState(null);
   const [manualRollNo, setManualRollNo] = useState('');
   const [modalError, setModalError] = useState('');
+  const isSubmittingRef = useRef(false); // Use ref to track submission across renders
 
   const downloadCSV = () => {
     const csvData = [
@@ -42,17 +43,35 @@ function AttendanceResults({ data, onReset }) {
   };
 
   const submitAttendance = async () => {
+    // Prevent double submission using ref
+    if (isSubmittingRef.current || submitting || submitMessage.type === 'success') {
+      console.log('Submission blocked - already in progress or completed');
+      return;
+    }
+
+    isSubmittingRef.current = true;
     setSubmitting(true);
     setSubmitMessage({ type: '', text: '' });
 
     try {
+      // Combine auto-detected present and manually marked students
+      const allPresentIds = [
+        ...present.map(s => s.student_id),
+        ...manuallyMarked.map(m => m.student_id)
+      ];
+
+      // Filter out manually marked students from absent list
+      const actualAbsentIds = absent
+        .filter(s => !manuallyMarked.some(m => m.student_id === s.student_id))
+        .map(s => s.student_id);
+
+      console.log('Submitting attendance once...');
       const response = await axios.post('http://localhost:5000/api/attendance/submit', {
         class_name,
         timestamp,
-        present: present.map(s => s.student_id),
-        absent: absent.map(s => s.student_id),
-        unrecognized_count: unrecognized.length,
-        manually_marked: manuallyMarked.map(m => m.student_id)
+        present: allPresentIds,
+        absent: actualAbsentIds,
+        unrecognized_count: unrecognized.length - markedFaceIndexes.length
       });
 
       setSubmitMessage({ 
@@ -64,6 +83,7 @@ function AttendanceResults({ data, onReset }) {
         type: 'error', 
         text: error.response?.data?.error || 'Failed to submit attendance' 
       });
+      isSubmittingRef.current = false; // Reset ref on error to allow retry
     } finally {
       setSubmitting(false);
     }

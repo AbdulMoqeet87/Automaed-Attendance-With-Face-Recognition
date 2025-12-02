@@ -276,9 +276,7 @@ class Database:
         sample_students = [
             {'student_id': 'bscs22147', 'name': 'Abdul Moqeet'},
             {'student_id': 'bscs22059', 'name': 'Amna Amir'},
-            {'student_id': 'bscs22001', 'name': 'Ali Ahmed'},
-            {'student_id': 'bscs22002', 'name': 'Sara Khan'},
-            {'student_id': 'bscs22003', 'name': 'Hassan Ali'},
+
         ]
         
         for student in sample_students:

@@ -125,18 +125,8 @@ class AttendanceController:
         _, buffer = cv2.imencode('.jpg', annotated_img)
         annotated_base64 = base64.b64encode(buffer).decode('utf-8')
         
-        # Store attendance in database
+        # Return results to Presentation Layer (attendance will be saved when user clicks "Submit")
         timestamp = datetime.now()
-        attendance_record = {
-            'class_name': course_code,
-            'timestamp': timestamp,
-            'present': present_list,
-            'absent': absent_list,
-            'unrecognized_count': len(unrecognized_list)
-        }
-        self.database.store_attendance(attendance_record)
-        
-        # Return results to Presentation Layer
         return {
             'class_name': course_code,
             'timestamp': timestamp.isoformat(),
@@ -211,8 +201,7 @@ class AttendanceController:
             'timestamp': datetime.fromisoformat(attendance_data['timestamp']) if isinstance(attendance_data.get('timestamp'), str) else datetime.now(),
             'present': attendance_data.get('present', []),
             'absent': attendance_data.get('absent', []),
-            'unrecognized_count': attendance_data.get('unrecognized_count', 0),
-            'manually_marked': attendance_data.get('manually_marked', [])
+            'unrecognized_count': attendance_data.get('unrecognized_count', 0)
         }
         
         # Store in database
