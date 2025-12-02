@@ -32,12 +32,71 @@ def health_check():
         'timestamp': datetime.now().isoformat()
     })
 
-@app.route('/api/courses', methods=['GET'])
-def get_courses():
-    """Get list of all available courses"""
+@app.route('/api/courses', methods=['GET', 'POST'])
+def manage_courses():
+    """
+    GET: Get list of all courses
+    POST: Create a new course
+    """
+    if request.method == 'GET':
+        try:
+            courses = attendance_controller.get_all_courses()
+            return jsonify(courses), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    
+    elif request.method == 'POST':
+        try:
+            data = request.get_json()
+            
+            if not data or 'course_code' not in data or 'course_name' not in data:
+                return jsonify({'error': 'course_code and course_name are required'}), 400
+            
+            result = attendance_controller.create_course(
+                data['course_code'],
+                data['course_name']
+            )
+            return jsonify(result), 201
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+@app.route('/api/courses/<course_code>/students', methods=['GET', 'POST'])
+def manage_course_students(course_code):
+    """Get students in a course or enroll a student"""
+    if request.method == 'GET':
+        try:
+            students = attendance_controller.get_students_in_course(course_code)
+            return jsonify(students), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    
+    elif request.method == 'POST':
+        try:
+            data = request.get_json()
+            if not data or 'student_id' not in data:
+                return jsonify({'error': 'student_id is required'}), 400
+            
+            result = attendance_controller.enroll_student_in_course(
+                data['student_id'],
+                course_code
+            )
+            return jsonify(result), 201
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+@app.route('/api/students', methods=['GET'])
+def get_all_students_filtered():
+    """Get all students, optionally filtered by degree year"""
     try:
-        courses = get_all_courses()
-        return jsonify(courses), 200
+        degree_year = request.args.get('degree_year')
+        students = attendance_controller.get_students_by_year(degree_year)
+        return jsonify(students), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -45,7 +104,7 @@ def get_courses():
 def process_attendance():
     """
     Main endpoint to process attendance from uploaded classroom image
-    Expects: multipart/form-data with 'image' file and 'class_name' string
+    Expects: multipart/form-data with 'image' file and 'course_code' string
     Returns: JSON with attendance results
     """
     try:
@@ -53,11 +112,11 @@ def process_attendance():
         if 'image' not in request.files:
             return jsonify({'error': 'No image file provided'}), 400
         
-        if 'class_name' not in request.form:
-            return jsonify({'error': 'No class name provided'}), 400
+        if 'course_code' not in request.form:
+            return jsonify({'error': 'No course code provided'}), 400
         
         file = request.files['image']
-        class_name = request.form['class_name']
+        course_code = request.form['course_code']
         
         # Validate file
         if file.filename == '':
@@ -74,7 +133,7 @@ def process_attendance():
         file.save(filepath)
         
         # Process attendance
-        result = attendance_controller.process_attendance(filepath, class_name)
+        result = attendance_controller.process_attendance(filepath, course_code)
         
         # Clean up uploaded file (optional - you may want to keep it)
         # os.remove(filepath)
@@ -85,40 +144,24 @@ def process_attendance():
         app.logger.error(f"Error processing attendance: {str(e)}")
         return jsonify({'error': f'Failed to process attendance: {str(e)}'}), 500
 
-@app.route('/api/students', methods=['GET'])
-def get_students():
-    """Get all registered students"""
-    try:
-        students = attendance_controller.get_all_students()
-        return jsonify(students), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/api/students/add', methods=['POST'])
 def add_student_with_images():
     """
-    Add a new student with face images
-    Expects: multipart/form-data with 'student_id', 'name', and 'images' files
+    Add a new student globally with face images
+    Expects: multipart/form-data with 'student_id', 'name', 'degree_year', and 'images' files
     Returns: JSON with success message
     """
     try:
         # Validate request
-        if 'student_id' not in request.form or 'name' not in request.form:
-            return jsonify({'error': 'Student ID and name are required'}), 400
+        if 'student_id' not in request.form or 'name' not in request.form or 'degree_year' not in request.form:
+            return jsonify({'error': 'Student ID, name, and degree year are required'}), 400
         
         if 'images' not in request.files:
             return jsonify({'error': 'At least one image is required'}), 400
         
         student_id = request.form['student_id']
         name = request.form['name']
-        enrolled_courses_json = request.form.get('enrolled_courses', '[]')
-        
-        # Parse enrolled courses
-        import json
-        try:
-            enrolled_courses = json.loads(enrolled_courses_json)
-        except:
-            enrolled_courses = []
+        degree_year = request.form['degree_year']
         
         files = request.files.getlist('images')
         
@@ -180,8 +223,8 @@ def add_student_with_images():
         result = attendance_controller.add_student({
             'student_id': student_id,
             'name': name,
-            'embeddings': embeddings,
-            'enrolled_courses': enrolled_courses
+            'degree_year': degree_year,
+            'embeddings': embeddings
         })
         
         response_data = {

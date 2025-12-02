@@ -7,6 +7,12 @@ function AttendanceResults({ data, onReset }) {
   const { present, absent, unrecognized, annotated_image, class_name, timestamp } = data;
   const [submitting, setSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState({ type: '', text: '' });
+  const [manuallyMarked, setManuallyMarked] = useState([]);
+  const [markedFaceIndexes, setMarkedFaceIndexes] = useState([]); // Track which unrecognized faces have been marked
+  const [showManualMarkModal, setShowManualMarkModal] = useState(false);
+  const [selectedFaceIndex, setSelectedFaceIndex] = useState(null);
+  const [manualRollNo, setManualRollNo] = useState('');
+  const [modalError, setModalError] = useState('');
 
   const downloadCSV = () => {
     const csvData = [
@@ -39,12 +45,13 @@ function AttendanceResults({ data, onReset }) {
     setSubmitMessage({ type: '', text: '' });
 
     try {
-      const response = await axios.post('/api/attendance/submit', {
+      const response = await axios.post('http://localhost:5000/api/attendance/submit', {
         class_name,
         timestamp,
         present: present.map(s => s.student_id),
         absent: absent.map(s => s.student_id),
-        unrecognized_count: unrecognized.length
+        unrecognized_count: unrecognized.length,
+        manually_marked: manuallyMarked.map(m => m.student_id)
       });
 
       setSubmitMessage({ 
@@ -61,6 +68,58 @@ function AttendanceResults({ data, onReset }) {
     }
   };
 
+  const handleFaceClick = (index) => {
+    setSelectedFaceIndex(index);
+    setShowManualMarkModal(true);
+    setManualRollNo('');
+    setModalError('');
+  };
+
+  const handleManualMark = async () => {
+    if (!manualRollNo.trim()) {
+      setModalError('Please enter a roll number');
+      return;
+    }
+
+    try {
+      // Fetch students in this course to validate
+      const response = await axios.get(`http://localhost:5000/api/courses/${class_name}/students`);
+      const students = response.data;
+      
+      const student = students.find(s => s.student_id === manualRollNo.trim());
+      
+      if (!student) {
+        setModalError(`Student with roll number ${manualRollNo} not found in this course`);
+        return;
+      }
+
+      // Check if already marked (either in present or manually_marked)
+      const alreadyPresent = present.some(s => s.student_id === student.student_id);
+      const alreadyManual = manuallyMarked.some(m => m.student_id === student.student_id);
+      
+      if (alreadyPresent || alreadyManual) {
+        setModalError('This student is already marked present');
+        return;
+      }
+
+      // Add to manually marked list
+      setManuallyMarked([...manuallyMarked, {
+        student_id: student.student_id,
+        name: student.name,
+        marked_manually: true
+      }]);
+
+      // Mark this face index as processed so it won't be displayed anymore
+      setMarkedFaceIndexes([...markedFaceIndexes, selectedFaceIndex]);
+
+      // Close modal
+      setShowManualMarkModal(false);
+      setModalError('');
+    } catch (error) {
+      setModalError('Failed to validate student: ' + (error.response?.data?.error || error.message));
+    }
+  };
+
   return (
     <div className="results-container">
       <div className="results-card">
@@ -73,15 +132,15 @@ function AttendanceResults({ data, onReset }) {
 
         <div className="stats-grid">
           <div className="stat-card present-card">
-            <div className="stat-number">{present.length}</div>
+            <div className="stat-number">{present.length + manuallyMarked.length}</div>
             <div className="stat-label">Present</div>
           </div>
           <div className="stat-card absent-card">
-            <div className="stat-number">{absent.length}</div>
+            <div className="stat-number">{absent.length - manuallyMarked.length}</div>
             <div className="stat-label">Absent</div>
           </div>
           <div className="stat-card unrecognized-card">
-            <div className="stat-number">{unrecognized.length}</div>
+            <div className="stat-number">{unrecognized.length - markedFaceIndexes.length}</div>
             <div className="stat-label">Unrecognized</div>
           </div>
         </div>
@@ -100,21 +159,30 @@ function AttendanceResults({ data, onReset }) {
         <div className="attendance-lists">
           <div className="list-section">
             <h3 className="list-title present-title">
-              ✓ Present Students ({present.length})
+              ✓ Present Students ({present.length + manuallyMarked.length})
             </h3>
             <div className="student-list">
-              {present.length > 0 ? (
-                present.map((student, index) => (
-                  <div key={index} className="student-item present-item">
-                    <span className="student-id">{student.student_id}</span>
-                    <span className="student-name">{student.name}</span>
-                    {student.confidence && (
-                      <span className="confidence">
-                        {(student.confidence * 100).toFixed(1)}%
-                      </span>
-                    )}
-                  </div>
-                ))
+              {present.length > 0 || manuallyMarked.length > 0 ? (
+                <>
+                  {present.map((student, index) => (
+                    <div key={index} className="student-item present-item">
+                      <span className="student-id">{student.student_id}</span>
+                      <span className="student-name">{student.name}</span>
+                      {student.confidence && (
+                        <span className="confidence">
+                          {(student.confidence * 100).toFixed(1)}%
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                  {manuallyMarked.map((student, index) => (
+                    <div key={`manual-${index}`} className="student-item present-item manual-mark">
+                      <span className="student-id">{student.student_id}</span>
+                      <span className="student-name">{student.name}</span>
+                      <span className="manual-badge">Manual</span>
+                    </div>
+                  ))}
+                </>
               ) : (
                 <p className="empty-list">No students marked present</p>
               )}
@@ -123,41 +191,50 @@ function AttendanceResults({ data, onReset }) {
 
           <div className="list-section">
             <h3 className="list-title absent-title">
-              ✗ Absent Students ({absent.length})
+              ✗ Absent Students ({absent.length - manuallyMarked.length})
             </h3>
             <div className="student-list">
-              {absent.length > 0 ? (
-                absent.map((student, index) => (
-                  <div key={index} className="student-item absent-item">
-                    <span className="student-id">{student.student_id}</span>
-                    <span className="student-name">{student.name}</span>
-                  </div>
-                ))
+              {absent.filter(student => !manuallyMarked.some(m => m.student_id === student.student_id)).length > 0 ? (
+                absent
+                  .filter(student => !manuallyMarked.some(m => m.student_id === student.student_id))
+                  .map((student, index) => (
+                    <div key={index} className="student-item absent-item">
+                      <span className="student-id">{student.student_id}</span>
+                      <span className="student-name">{student.name}</span>
+                    </div>
+                  ))
               ) : (
                 <p className="empty-list">All students are present</p>
               )}
             </div>
           </div>
 
-          {unrecognized.length > 0 && (
+          {unrecognized.filter((_, index) => !markedFaceIndexes.includes(index)).length > 0 && (
             <div className="list-section unrecognized-section">
               <h3 className="list-title unrecognized-title">
-                ? Unrecognized Faces ({unrecognized.length})
+                ? Unrecognized Faces ({unrecognized.length - markedFaceIndexes.length})
               </h3>
               <div className="unrecognized-faces">
                 {unrecognized.map((face, index) => (
-                  <div key={index} className="face-card">
-                    <img 
-                      src={`data:image/jpeg;base64,${face}`} 
-                      alt={`Unrecognized face ${index + 1}`}
-                      className="face-thumbnail"
-                    />
-                    <p className="face-label">Face #{index + 1}</p>
-                  </div>
+                  !markedFaceIndexes.includes(index) && (
+                    <div 
+                      key={index} 
+                      className="face-card clickable"
+                      onClick={() => handleFaceClick(index)}
+                    >
+                      <img 
+                        src={`data:image/jpeg;base64,${face}`} 
+                        alt={`Unrecognized face ${index + 1}`}
+                        className="face-thumbnail"
+                      />
+                      <p className="face-label">Face #{index + 1}</p>
+                      <p className="click-hint">Click to mark manually</p>
+                    </div>
+                  )
                 ))}
               </div>
               <p className="info-text">
-                These faces were detected but not recognized. Please review and manually mark attendance if needed.
+                Click on any unrecognized face to manually mark attendance by entering the student's roll number.
               </p>
             </div>
           )}
@@ -188,6 +265,43 @@ function AttendanceResults({ data, onReset }) {
           </button>
         </div>
       </div>
+
+      {/* Manual Mark Modal */}
+      {showManualMarkModal && (
+        <div className="modal-overlay" onClick={() => setShowManualMarkModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Manually Mark Attendance</h3>
+            {selectedFaceIndex !== null && (
+              <div className="modal-face-preview">
+                <img 
+                  src={`data:image/jpeg;base64,${unrecognized[selectedFaceIndex]}`} 
+                  alt="Selected face"
+                  className="modal-face-image"
+                />
+              </div>
+            )}
+            <div className="form-group">
+              <label>Enter Student Roll Number:</label>
+              <input
+                type="text"
+                value={manualRollNo}
+                onChange={(e) => setManualRollNo(e.target.value)}
+                placeholder="e.g., 2021-CS-123"
+                autoFocus
+              />
+            </div>
+            {modalError && <div className="modal-error">{modalError}</div>}
+            <div className="modal-buttons">
+              <button className="btn-modal-submit" onClick={handleManualMark}>
+                Mark Present
+              </button>
+              <button className="btn-modal-cancel" onClick={() => setShowManualMarkModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

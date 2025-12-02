@@ -1,37 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import './StudentManagement.css';
 
 function StudentManagement() {
   const [studentId, setStudentId] = useState('');
   const [studentName, setStudentName] = useState('');
+  const [degreeYear, setDegreeYear] = useState('');
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [selectedCourses, setSelectedCourses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  // Fetch available courses on component mount
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get('/api/courses');
-        setCourses(response.data);
-      } catch (error) {
-        console.error('Error fetching courses:', error);
-      }
-    };
-    fetchCourses();
-  }, []);
-
-  const handleCourseToggle = (courseCode) => {
-    setSelectedCourses(prev => 
-      prev.includes(courseCode)
-        ? prev.filter(c => c !== courseCode)
-        : [...prev, courseCode]
-    );
-  };
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({length: 10}, (_, i) => currentYear - i);
 
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
@@ -52,18 +33,13 @@ function StudentManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!studentId.trim() || !studentName.trim()) {
-      setMessage({ type: 'error', text: 'Please enter student ID and name' });
+    if (!studentId.trim() || !studentName.trim() || !degreeYear.trim()) {
+      setMessage({ type: 'error', text: 'Please enter student ID, name, and degree year' });
       return;
     }
 
     if (images.length === 0) {
       setMessage({ type: 'error', text: 'Please upload at least one image' });
-      return;
-    }
-
-    if (selectedCourses.length === 0) {
-      setMessage({ type: 'error', text: 'Please select at least one course' });
       return;
     }
 
@@ -74,13 +50,13 @@ function StudentManagement() {
       const formData = new FormData();
       formData.append('student_id', studentId);
       formData.append('name', studentName);
-      formData.append('enrolled_courses', JSON.stringify(selectedCourses));
+      formData.append('degree_year', degreeYear);
       
-      images.forEach((image, index) => {
+      images.forEach((image) => {
         formData.append('images', image);
       });
 
-      const response = await axios.post('/api/students/add', formData, {
+      const response = await axios.post('http://localhost:5000/api/students/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -91,9 +67,9 @@ function StudentManagement() {
       // Reset form
       setStudentId('');
       setStudentName('');
+      setDegreeYear('');
       setImages([]);
       setImagePreviews([]);
-      setSelectedCourses([]);
       
     } catch (error) {
       setMessage({ 
@@ -116,18 +92,18 @@ function StudentManagement() {
     <div className="student-management">
       <div className="management-card">
         <h2>Add New Student</h2>
-        <p className="subtitle">Register a student with their face images for attendance recognition</p>
+        <p className="subtitle">Register a student globally with their face images. You can later enroll them in courses.</p>
 
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="studentId">Student ID *</label>
+              <label htmlFor="studentId">Student ID / Roll Number *</label>
               <input
                 type="text"
                 id="studentId"
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
-                placeholder="e.g., bscs22100"
+                placeholder="e.g., bscs22147"
                 required
               />
             </div>
@@ -146,27 +122,18 @@ function StudentManagement() {
           </div>
 
           <div className="form-group">
-            <label>Enrolled Courses * (Select all applicable)</label>
-            <div className="courses-grid">
-              {courses.map((course) => (
-                <label key={course.code} className="course-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selectedCourses.includes(course.code)}
-                    onChange={() => handleCourseToggle(course.code)}
-                  />
-                  <span className="course-label">
-                    <strong>{course.code}</strong>
-                    <small>{course.name}</small>
-                  </span>
-                </label>
+            <label htmlFor="degreeYear">Degree Starting Year *</label>
+            <select
+              id="degreeYear"
+              value={degreeYear}
+              onChange={(e) => setDegreeYear(e.target.value)}
+              required
+            >
+              <option value="">Select Year</option>
+              {yearOptions.map(year => (
+                <option key={year} value={year}>{year}</option>
               ))}
-            </div>
-            {selectedCourses.length > 0 && (
-              <p className="selected-count">
-                {selectedCourses.length} course(s) selected
-              </p>
-            )}
+            </select>
           </div>
 
           <div className="form-group">
@@ -220,11 +187,12 @@ function StudentManagement() {
         <div className="info-box">
           <h3>📋 Instructions:</h3>
           <ul>
-            <li>Upload 2-5 clear face images of the student</li>
-            <li>Images should have good lighting and front-facing angles</li>
+            <li>Enter unique student ID/roll number</li>
+            <li>Select the year the student started their degree</li>
+            <li>Upload 2-5 clear face images with good lighting</li>
+            <li>Images should have front-facing angles</li>
             <li>Different expressions/angles improve recognition accuracy</li>
-            <li>Avoid sunglasses, masks, or face obstructions</li>
-            <li>Each student ID must be unique</li>
+            <li>After adding, go to Courses tab to enroll student in courses</li>
           </ul>
         </div>
       </div>

@@ -13,7 +13,7 @@ function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get('/api/courses');
+        const response = await axios.get('http://localhost:5000/api/courses');
         setCourses(response.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
@@ -58,11 +58,11 @@ function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
 
     const formData = new FormData();
     formData.append('image', selectedImage);
-    formData.append('class_name', className);
+    formData.append('course_code', className);
 
     try {
       onLoadingStart();
-      const response = await axios.post('/api/process-attendance', formData, {
+      const response = await axios.post('http://localhost:5000/api/process-attendance', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -99,8 +99,8 @@ function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
             >
               <option value="">-- Select a course --</option>
               {courses.map((course) => (
-                <option key={course.code} value={course.code}>
-                  {course.code} - {course.name}
+                <option key={course.course_code} value={course.course_code}>
+                  {course.course_code} - {course.course_name}
                 </option>
               ))}
             </select>

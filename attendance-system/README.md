@@ -2,15 +2,15 @@
 
 An automated attendance management system using face recognition technology based on FaceNet and OpenCV.
 
-## 👥 Team Members
+## Team Members
 - **Abdul Moqeet** (bscs22147)
 - **Amna Amir** (bscs22059)
 
-## 📋 Overview
+## Overview
 
 This system automates classroom attendance using facial recognition technology. It detects and recognizes students in classroom images, generates attendance reports, and identifies unrecognized faces for manual review.
 
-## 🏗️ Architecture
+## Architecture
 
 The system follows a **Layered Architecture** with four main modules:
 
@@ -19,20 +19,21 @@ The system follows a **Layered Architecture** with four main modules:
 3. **Machine Learning Module** - FaceNet for face recognition, OpenCV for face detection
 4. **Data Module** - MongoDB for data persistence
 
-## ✨ Features
+## Features
 
-- ✅ Automated face detection and recognition using FaceNet
-- ✅ Course enrollment system with 15 predefined CS courses
-- ✅ Course-based attendance filtering (only enrolled students marked)
-- ✅ Real-time attendance marking
-- ✅ Generation of present/absent student lists
-- ✅ Unrecognized faces detection for manual review
-- ✅ Annotated classroom images with identified faces (green/orange boxes)
-- ✅ CSV export of attendance records
-- ✅ Attendance history tracking with filters
-- ✅ Student management system with multi-image upload and course selection
+- Automated face detection and recognition using FaceNet
+- Global student registration with degree year tracking
+- Multi-course enrollment system
+- Course-based attendance filtering (only enrolled students marked)
+- Real-time attendance marking
+- Generation of present/absent student lists
+- Manual marking for unrecognized faces
+- Annotated classroom images with identified faces (green/orange boxes)
+- CSV export of attendance records
+- Attendance history tracking with filters
+- Student management system with multi-image upload
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Frontend
 - React 18.2.0
@@ -45,7 +46,11 @@ The system follows a **Layered Architecture** with four main modules:
 - TensorFlow 2.20.0 + Keras 3.12.0 + keras-facenet for FaceNet embeddings
 - PyMongo 4.15.4 for MongoDB integration
 
-## 📦 Installation & Setup
+### Testing
+- **Unit Testing** - Individual module testing for database operations, face recognition, and API endpoints
+- **Integration Testing** - End-to-end workflow testing for attendance processing, student management, and course enrollment
+
+## Installation & Setup
 
 ### Prerequisites
 - **Python 3.8+** (Python 3.12 recommended)
@@ -161,47 +166,56 @@ The system follows a **Layered Architecture** with four main modules:
 
 ---
 
-## 🚀 Usage
+## Usage Guide
 
 ### 1. Register Students
-1. Go to **"Manage Students"** tab
-2. Enter student ID and name
-3. **Select courses** the student is enrolled in (check all applicable courses)
-4. Upload 2-3 clear face photos (different angles recommended)
-5. Click **"Add Student"**
-6. Wait for confirmation
+1. Navigate to the **"Manage Students"** tab
+2. Enter the student ID, name, and select their degree starting year
+3. Upload 2-3 clear face photos from different angles for better recognition accuracy
+4. Click **"Add Student"** to register the student globally
+5. The student is now registered and can be enrolled in courses
 
-### 2. Take Attendance
-1. Go to **"Take Attendance"** tab
-2. **Select course** from the dropdown (15 predefined CS courses available)
-3. Upload classroom image
+### 2. Enroll Students in Courses
+1. Go to the **"Courses"** tab
+2. Create a new course or select an existing course
+3. Click **"Add Student"** on the course card
+4. Filter students by degree year if needed
+5. Select multiple students using checkboxes
+6. Click **"Enroll Selected"** to add them to the course
+
+### 3. Take Attendance
+1. Navigate to the **"Take Attendance"** tab
+2. Select the course from the dropdown menu
+3. Upload a classroom image
 4. Click **"Process Attendance"**
-5. View results:
-   - **Green boxes** with roll numbers = Recognized students enrolled in the course
-   - **Orange boxes** with "NO MATCH" = Unrecognized faces or students not enrolled
-6. Click **"Submit Attendance"** to save to database
+5. Review the results:
+   - **Green boxes** with roll numbers indicate recognized students
+   - **Orange boxes** with "NO MATCH" indicate unrecognized faces
+6. Click on any unrecognized face to manually mark attendance by entering the student ID
+7. Click **"Submit Attendance"** to save the record to the database
 
-**Note**: Only students enrolled in the selected course will be marked present/absent. Students not enrolled in the course are ignored even if detected in the image.
+**Note**: Only students enrolled in the selected course will be marked present or absent. Students not enrolled in the course are ignored even if detected in the image.
 
-### 3. View History
-1. Go to **"View History"** tab
-2. Filter by class name or date (optional)
-3. Click on any record to expand details
-4. View present/absent student lists with names
+### 4. View Attendance History
+1. Go to the **"View History"** tab
+2. Apply filters by course name or date if desired
+3. Click on any record to expand and view details
+4. Review present, absent, and manually marked student lists
 
-### 4. Export Data
-- **CSV Export**: Click "Download CSV" button in results
-- **Image Export**: Click "Download Annotated Image" button
+### 5. Export Data
+- **CSV Export**: Click the "Download CSV" button in attendance results
+- **Image Export**: Click the "Download Annotated Image" button to save the processed image
 
 ---
 
-## 📝 Important Notes
+## Important Notes
 
-### Course Enrollment System
-- **15 Predefined Courses**: CS101 to CS405 (Introduction to Programming, OOP, Data Structures, etc.)
-- Students must be enrolled in a course to be marked present/absent in that course
-- Multiple course enrollment supported - students can be enrolled in multiple courses
-- Course-based filtering ensures accurate attendance for each class
+### Student and Course Management
+- Students are registered globally with their degree starting year (e.g., 2022, 2023)
+- After registration, students can be enrolled in multiple courses
+- Only students enrolled in a specific course will be marked present/absent for that course
+- Course-based filtering ensures accurate attendance tracking for each class
+- Degree year filtering helps efficiently manage large student populations
 
 ### Face Recognition Accuracy
 - **Threshold**: Currently set to 80% similarity (adjustable in `backend/ml_module/face_recognizer.py`)
@@ -237,7 +251,7 @@ The system follows a **Layered Architecture** with four main modules:
 
 ---
 
-## 📚 Project Structure
+## Project Structure
 
 ```
 attendance-system/
@@ -271,24 +285,24 @@ attendance-system/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-This is an academic project for Software Engineering course at ITU.
-
----
-
-## 📄 License
-
-This project is created for educational purposes.
+This is an academic project developed for the Software Engineering course at Information Technology University (ITU).
 
 ---
 
-## 📧 Contact
+## License
 
-For questions or issues, contact:
+This project is created for educational purposes as part of academic coursework.
+
+---
+
+## Contact
+
+For questions or issues regarding this project, please contact:
 - Abdul Moqeet (bscs22147@itu.edu.pk)
 - Amna Amir (bscs22059@itu.edu.pk)
 
 ---
 
-**Developed with ❤️ by Abdul Moqeet & Amna Amir**
+**Developed by Abdul Moqeet and Amna Amir**

@@ -4,9 +4,10 @@ import ImageUpload from './components/ImageUpload';
 import AttendanceResults from './components/AttendanceResults';
 import StudentManagement from './components/StudentManagement';
 import AttendanceHistory from './components/AttendanceHistory';
+import Courses from './components/Courses';
 
 function App() {
-  const [currentView, setCurrentView] = useState('attendance'); // 'attendance', 'manage', or 'history'
+  const [currentView, setCurrentView] = useState('attendance'); // 'attendance', 'manage', 'history', or 'courses'
   const [attendanceData, setAttendanceData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -39,6 +40,15 @@ function App() {
             }}
           >
             📋 Take Attendance
+          </button>
+          <button 
+            className={`nav-tab ${currentView === 'courses' ? 'active' : ''}`}
+            onClick={() => {
+              setCurrentView('courses');
+              handleReset();
+            }}
+          >
+            📚 Courses
           </button>
           <button 
             className={`nav-tab ${currentView === 'manage' ? 'active' : ''}`}
@@ -89,6 +99,10 @@ function App() {
 
         {currentView === 'manage' && (
           <StudentManagement />
+        )}
+
+        {currentView === 'courses' && (
+          <Courses />
         )}
 
         {currentView === 'history' && (
