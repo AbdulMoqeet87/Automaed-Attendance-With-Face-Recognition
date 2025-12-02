@@ -1,0 +1,95 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+backend/venv/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Build outputs
+frontend/build/
+frontend/dist/
+
+# Uploads and temporary files
+backend/uploads/
+backend/ml_module/facenet_cache/
+*.jpg
+*.jpeg
+*.png
+*.gif
+!backend/ml_module/facenet_keras.h5
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Model files (if too large)
+backend/ml_module/facenet_keras.h5
+backend/ml_module/*.h5
+backend/ml_module/*.pb
+backend/ml_module/*.pth
+
+# Utility scripts output
+backend/check_attendance.py
+backend/test_history_endpoint.py
