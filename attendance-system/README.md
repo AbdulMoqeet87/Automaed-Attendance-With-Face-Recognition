@@ -53,7 +53,7 @@ The system follows a **Layered Architecture** with four main modules:
 ## Installation & Setup
 
 ### Prerequisites
-- **Python 3.8+** (Python 3.12 recommended)
+- **Python 3.10-3.12** (Python 3.12 recommended)
 - **Node.js v16+** (for React frontend)
 - **MongoDB** - Install locally OR use MongoDB Atlas (free cloud option)
 
@@ -100,17 +100,20 @@ The system follows a **Layered Architecture** with four main modules:
    # You should see (venv) before your prompt
    ```
 
-4. **Install Python dependencies:**
+4. **Upgrade pip and install dependencies:**
    ```powershell
+   python -m pip install --upgrade pip setuptools wheel
    pip install -r requirements.txt
    ```
    This installs:
-   - Flask 3.0.0
-   - opencv-python 4.12.0.88
-   - tensorflow 2.20.0
+   - Flask 3.0+
+   - opencv-python 4.8+
+   - tensorflow 2.15+
    - keras-facenet (includes FaceNet model)
-   - pymongo 4.15.4
-   - python-dotenv 1.0.0
+   - pymongo 4.6+
+   - numpy, Pillow, Werkzeug, and python-dotenv
+   
+   **Note:** The requirements.txt uses flexible versioning (>=) to automatically install compatible versions for your Python version.
 
 5. **Configure MongoDB connection:**
    
@@ -234,11 +237,24 @@ The system follows a **Layered Architecture** with four main modules:
 - Make sure virtual environment is activated: `venv\Scripts\activate`
 - Check MongoDB is running (local) or connection string is correct (Atlas)
 - Verify all dependencies installed: `pip install -r requirements.txt`
+- If dependency issues persist, delete and recreate venv:
+  ```powershell
+  Remove-Item -Recurse -Force venv
+  python -m venv venv
+  venv\Scripts\activate
+  python -m pip install --upgrade pip setuptools wheel
+  pip install -r requirements.txt
+  ```
 
 **FaceNet model error:**
 - keras-facenet will auto-download the model on first run
 - Make sure you have sufficient disk space (~200MB)
 - If C: drive is full, the model will be cached to `backend/ml_module/facenet_cache/`
+
+**Python 3.12 compatibility issues:**
+- If you encounter build errors with opencv-python or numpy, ensure pip/setuptools/wheel are up-to-date
+- The requirements.txt uses flexible versioning to auto-select compatible versions
+- For persistent issues, try installing packages individually: `pip install Flask flask-cors pymongo opencv-python numpy tensorflow`
 
 **Frontend can't connect to backend:**
 - Verify backend is running on port 5000
