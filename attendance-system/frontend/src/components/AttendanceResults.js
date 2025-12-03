@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
 import axios from 'axios';
+import API_URL from '../config';
 import { SendIcon, DownloadIcon, ImageIcon, RefreshIcon } from './Icons';
 import './AttendanceResults.css';
 
@@ -67,7 +68,7 @@ function AttendanceResults({ data, onReset }) {
         .map(s => s.student_id);
 
       console.log('Submitting attendance once...');
-      const response = await axios.post('http://localhost:5000/api/attendance/submit', {
+      const response = await axios.post(`${API_URL}/api/attendance/submit`, {
         class_name,
         timestamp,
         present: allPresentIds,
@@ -105,7 +106,7 @@ function AttendanceResults({ data, onReset }) {
 
     try {
       // Fetch students in this course to validate
-      const response = await axios.get(`http://localhost:5000/api/courses/${class_name}/students`);
+      const response = await axios.get(`${API_URL}/api/courses/${class_name}/students`);
       const students = response.data;
       
       const student = students.find(s => s.student_id === manualRollNo.trim());

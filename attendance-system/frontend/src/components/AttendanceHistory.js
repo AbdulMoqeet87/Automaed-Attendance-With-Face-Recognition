@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import { SearchIcon, XIcon } from './Icons';
 import './AttendanceHistory.css';
 
@@ -17,7 +18,7 @@ function AttendanceHistory() {
       if (filterClass) params.class_name = filterClass;
       if (filterDate) params.date = filterDate;
 
-      const response = await axios.get('/api/attendance/history', { params });
+      const response = await axios.get(`${API_URL}/api/attendance/history`, { params });
       setHistory(response.data);
     } catch (error) {
       console.error('Error fetching history:', error);

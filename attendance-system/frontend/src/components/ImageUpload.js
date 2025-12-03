@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import { UploadIcon, CameraIcon, InfoIcon, RefreshIcon } from './Icons';
 import './ImageUpload.css';
 
@@ -14,7 +15,7 @@ function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/courses');
+        const response = await axios.get(`${API_URL}/api/courses`);
         setCourses(response.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
@@ -63,7 +64,7 @@ function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
 
     try {
       onLoadingStart();
-      const response = await axios.post('http://localhost:5000/api/process-attendance', formData, {
+      const response = await axios.post(`${API_URL}/api/process-attendance`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

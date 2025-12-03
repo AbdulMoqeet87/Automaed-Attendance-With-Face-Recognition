@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import { PlusIcon, UserIcon, ArrowLeftIcon } from './Icons';
 import './Courses.css';
 
@@ -21,7 +22,7 @@ const Courses = () => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/courses');
+      const response = await axios.get(`${API_URL}/api/courses`);
       setCourses(response.data);
       setError('');
     } catch (err) {
@@ -41,7 +42,7 @@ const Courses = () => {
 
     try {
       setLoading(true);
-      await axios.post('http://localhost:5000/api/courses', {
+      await axios.post(`${API_URL}/api/courses`, {
         course_code: newCourse.course_code.trim(),
         course_name: newCourse.course_name.trim()
       });
@@ -61,7 +62,7 @@ const Courses = () => {
     try {
       setLoading(true);
       setSelectedCourse(course);
-      const response = await axios.get(`http://localhost:5000/api/courses/${course.course_code}/students`);
+      const response = await axios.get(`${API_URL}/api/courses/${course.course_code}/students`);
       setStudents(response.data);
       setError('');
     } catch (err) {
@@ -235,7 +236,7 @@ const AddStudentModal = ({ courseCode, onClose, onSuccess }) => {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/students');
+      const response = await axios.get(`${API_URL}/api/students`);
       setStudents(response.data);
       setFilteredStudents(response.data);
     } catch (err) {
@@ -265,7 +266,7 @@ const AddStudentModal = ({ courseCode, onClose, onSuccess }) => {
 
       // Enroll all selected students
       const enrollPromises = selectedStudentIds.map(student_id =>
-        axios.post(`http://localhost:5000/api/courses/${courseCode}/students`, {
+        axios.post(`${API_URL}/api/courses/${courseCode}/students`, {
           student_id
         })
       );

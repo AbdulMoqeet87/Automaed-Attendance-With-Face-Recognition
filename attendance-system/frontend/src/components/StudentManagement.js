@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import { CameraIcon, UserIcon, InfoIcon, XIcon } from './Icons';
 import './StudentManagement.css';
 
@@ -57,7 +58,7 @@ function StudentManagement() {
         formData.append('images', image);
       });
 
-      const response = await axios.post('http://localhost:5000/api/students/add', formData, {
+      const response = await axios.post(`${API_URL}/api/students/add`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
