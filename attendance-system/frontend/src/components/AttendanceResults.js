@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
 import axios from 'axios';
+import { SendIcon, DownloadIcon, ImageIcon, RefreshIcon } from './Icons';
 import './AttendanceResults.css';
 
 function AttendanceResults({ data, onReset }) {
@@ -168,7 +169,6 @@ function AttendanceResults({ data, onReset }) {
 
         {annotated_image && (
           <div className="annotated-image-section">
-            <h3>Annotated Classroom Image</h3>
             <img 
               src={`data:image/jpeg;base64,${annotated_image}`} 
               alt="Annotated classroom" 
@@ -180,7 +180,7 @@ function AttendanceResults({ data, onReset }) {
         <div className="attendance-lists">
           <div className="list-section">
             <h3 className="list-title present-title">
-              ✓ Present Students ({present.length + manuallyMarked.length})
+              Present Students ({present.length + manuallyMarked.length})
             </h3>
             <div className="student-list">
               {present.length > 0 || manuallyMarked.length > 0 ? (
@@ -212,7 +212,7 @@ function AttendanceResults({ data, onReset }) {
 
           <div className="list-section">
             <h3 className="list-title absent-title">
-              ✗ Absent Students ({absent.length - manuallyMarked.length})
+              Absent Students ({absent.length - manuallyMarked.length})
             </h3>
             <div className="student-list">
               {absent.filter(student => !manuallyMarked.some(m => m.student_id === student.student_id)).length > 0 ? (
@@ -273,16 +273,22 @@ function AttendanceResults({ data, onReset }) {
             onClick={submitAttendance}
             disabled={submitting || submitMessage.type === 'success'}
           >
-            {submitting ? '⏳ Submitting...' : submitMessage.type === 'success' ? '✓ Submitted' : '📤 Submit Attendance'}
+            <SendIcon size={18} />
+            <span style={{ marginLeft: '0.5rem' }}>
+              {submitting ? 'Submitting...' : submitMessage.type === 'success' ? 'Submitted' : 'Submit Attendance'}
+            </span>
           </button>
           <button className="btn btn-download" onClick={downloadCSV}>
-            📥 Download CSV
+            <DownloadIcon size={18} />
+            <span style={{ marginLeft: '0.5rem' }}>Download CSV</span>
           </button>
           <button className="btn btn-download" onClick={downloadAnnotatedImage}>
-            📥 Download Image
+            <ImageIcon size={18} />
+            <span style={{ marginLeft: '0.5rem' }}>Download Image</span>
           </button>
           <button className="btn btn-reset" onClick={onReset}>
-            🔄 New Attendance
+            <RefreshIcon size={18} />
+            <span style={{ marginLeft: '0.5rem' }}>New Attendance</span>
           </button>
         </div>
       </div>

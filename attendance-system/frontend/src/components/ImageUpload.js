@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { UploadIcon, CameraIcon, InfoIcon, RefreshIcon } from './Icons';
 import './ImageUpload.css';
 
 function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
@@ -108,8 +109,10 @@ function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
 
           <div className="form-group">
             <label htmlFor="imageInput" className="file-input-label">
-              <span className="upload-icon">📁</span>
-              {selectedImage ? 'Change Image' : 'Select Classroom Image'}
+              <UploadIcon size={20} />
+              <span style={{ marginLeft: '0.5rem' }}>
+                {selectedImage ? 'Change Image' : 'Select Classroom Image'}
+              </span>
             </label>
             <input
               type="file"
@@ -134,18 +137,23 @@ function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
 
           <div className="button-group">
             <button type="submit" className="btn btn-primary" disabled={!selectedImage || !className}>
-              Process Attendance
+              <CameraIcon size={18} />
+              <span style={{ marginLeft: '0.5rem' }}>Process Attendance</span>
             </button>
             {(selectedImage || className) && (
               <button type="button" className="btn btn-secondary" onClick={handleReset}>
-                Reset
+                <RefreshIcon size={18} />
+                <span style={{ marginLeft: '0.5rem' }}>Reset</span>
               </button>
             )}
           </div>
         </form>
 
         <div className="info-box">
-          <h3>Instructions:</h3>
+          <h3>
+            <InfoIcon size={18} />
+            <span style={{ marginLeft: '0.5rem' }}>Instructions:</span>
+          </h3>
           <ul>
             <li>Ensure the classroom image is clear and well-lit</li>
             <li>Faces should be visible and not obscured</li>

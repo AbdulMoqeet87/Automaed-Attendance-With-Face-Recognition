@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { PlusIcon, UserIcon, ArrowLeftIcon } from './Icons';
 import './Courses.css';
 
 const Courses = () => {
@@ -92,16 +93,19 @@ const Courses = () => {
         <h2>{selectedCourse ? `${selectedCourse.course_code} - ${selectedCourse.course_name}` : 'Courses'}</h2>
         {!selectedCourse && (
           <button className="create-course-btn" onClick={() => setShowCreateModal(true)}>
-            Create Course
+            <PlusIcon size={18} />
+            <span style={{ marginLeft: '0.5rem' }}>Create Course</span>
           </button>
         )}
         {selectedCourse && (
           <div className="course-actions">
             <button className="add-student-btn" onClick={handleAddStudent}>
-              Add Student
+              <UserIcon size={18} />
+              <span style={{ marginLeft: '0.5rem' }}>Add Student</span>
             </button>
             <button className="back-btn" onClick={handleBackToCourses}>
-              Back to Courses
+              <ArrowLeftIcon size={18} />
+              <span style={{ marginLeft: '0.5rem' }}>Back to Courses</span>
             </button>
           </div>
         )}
@@ -112,17 +116,20 @@ const Courses = () => {
       {loading && <div className="loading">Loading...</div>}
 
       {!selectedCourse ? (
-        <div className="courses-grid">
-          {courses.length === 0 && !loading && (
+        <>
+          {courses.length === 0 && !loading ? (
             <p className="no-data">No courses available. Create your first course!</p>
-          )}
-          {courses.map(course => (
-            <div key={course.course_code} className="course-card" onClick={() => handleCourseClick(course)}>
-              <div className="course-code">{course.course_code}</div>
-              <div className="course-name">{course.course_name}</div>
+          ) : (
+            <div className="courses-grid">
+              {courses.map(course => (
+                <div key={course.course_code} className="course-card" onClick={() => handleCourseClick(course)}>
+                  <div className="course-code">{course.course_code}</div>
+                  <div className="course-name">{course.course_name}</div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+        </>
       ) : (
         <div className="students-list">
           {students.length === 0 && !loading && (

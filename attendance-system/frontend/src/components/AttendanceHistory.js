@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { SearchIcon, XIcon } from './Icons';
 import './AttendanceHistory.css';
 
 function AttendanceHistory() {
@@ -47,7 +48,7 @@ function AttendanceHistory() {
   return (
     <div className="attendance-history">
       <div className="history-card">
-        <h2>📊 Attendance History</h2>
+        <h2>Attendance History</h2>
         <p className="subtitle">View and review past attendance records</p>
 
         <form className="filter-form" onSubmit={handleFilter}>
@@ -64,10 +65,12 @@ function AttendanceHistory() {
               onChange={(e) => setFilterDate(e.target.value)}
             />
             <button type="submit" className="btn btn-filter">
-              🔍 Filter
+              <SearchIcon size={16} />
+              <span style={{ marginLeft: '0.5rem' }}>Filter</span>
             </button>
             <button type="button" className="btn btn-clear" onClick={clearFilters}>
-              ✕ Clear
+              <XIcon size={16} />
+              <span style={{ marginLeft: '0.5rem' }}>Clear</span>
             </button>
           </div>
         </form>
@@ -79,7 +82,7 @@ function AttendanceHistory() {
           </div>
         ) : history.length === 0 ? (
           <div className="empty-state">
-            <p>📭 No attendance records found</p>
+            <p>No attendance records found</p>
             <p className="empty-hint">Submit attendance to see records here</p>
           </div>
         ) : (
@@ -94,8 +97,8 @@ function AttendanceHistory() {
                     </p>
                   </div>
                   <div className="history-stats">
-                    <span className="stat present">✓ {record.present?.length || 0} Present</span>
-                    <span className="stat absent">✗ {record.absent?.length || 0} Absent</span>
+                    <span className="stat present">{record.present?.length || 0} Present</span>
+                    <span className="stat absent">{record.absent?.length || 0} Absent</span>
                     {record.unrecognized_count > 0 && (
                       <span className="stat unrecognized">? {record.unrecognized_count} Unknown</span>
                     )}

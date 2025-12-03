@@ -8,51 +8,61 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
+  position: relative;
 }
 
 .courses-header h2 {
   margin: 0;
-  color: #333;
+  color: #1e3a5f;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .create-course-btn,
 .add-student-btn,
 .back-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
+  padding: 0.625rem 1rem;
+  border: 1px solid transparent;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s;
 }
 
 .create-course-btn {
-  background-color: #4CAF50;
+  background-color: #1e5a9e;
   color: white;
+  border-color: #1e5a9e;
+  margin-left: auto;
 }
 
 .create-course-btn:hover {
-  background-color: #45a049;
+  background-color: #163d6f;
+  border-color: #163d6f;
 }
 
 .add-student-btn {
-  background-color: #2196F3;
+  background-color: #2d7cc1;
   color: white;
+  border-color: #2d7cc1;
   margin-right: 10px;
 }
 
 .add-student-btn:hover {
-  background-color: #0b7dda;
+  background-color: #1e5a9e;
+  border-color: #1e5a9e;
 }
 
 .back-btn {
-  background-color: #757575;
+  background-color: #6b7280;
   color: white;
+  border-color: #6b7280;
 }
 
 .back-btn:hover {
-  background-color: #616161;
+  background-color: #4b5563;
+  border-color: #4b5563;
 }
 
 .course-actions {
@@ -62,43 +72,41 @@
 
 .courses-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .course-card {
   background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.15s, border-color 0.15s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .course-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-color: #2196F3;
+  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.12);
+  border-color: #1e5a9e;
 }
 
 .course-code {
-  font-size: 18px;
-  font-weight: bold;
-  color: #2196F3;
-  margin-bottom: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e5a9e;
+  margin-bottom: 0.5rem;
 }
 
 .course-name {
-  font-size: 14px;
-  color: #666;
+  font-size: 0.875rem;
+  color: #6b7280;
 }
 
 .students-list {
   background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .students-table {
@@ -126,25 +134,26 @@
 
 .no-data {
   text-align: center;
-  color: #999;
-  padding: 40px;
-  font-size: 16px;
+  color: #9ca3af;
+  padding: 3rem;
+  font-size: 0.875rem;
 }
 
 .loading {
   text-align: center;
-  padding: 40px;
-  color: #666;
-  font-size: 16px;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 0.875rem;
 }
 
 .error-message {
-  background-color: #ffebee;
-  color: #c62828;
-  padding: 12px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-  border-left: 4px solid #c62828;
+  background-color: #fef2f2;
+  color: #991b1b;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ef4444;
+  border-left-width: 3px;
+  font-size: 0.875rem;
 }
 
 /* Modal Styles */
@@ -214,8 +223,7 @@
   width: 80px;
   height: 80px;
   object-fit: cover;
-  border-radius: 4px;
-  border: 2px solid #ddd;
+  border: 1px solid #e5e7eb;
 }
 
 .modal-buttons {
@@ -227,35 +235,41 @@
 
 .submit-btn,
 .cancel-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
+  padding: 0.625rem 1rem;
+  border: 1px solid transparent;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s;
 }
 
 .submit-btn {
-  background-color: #4CAF50;
+  background-color: #1e5a9e;
   color: white;
+  border-color: #1e5a9e;
 }
 
 .submit-btn:hover {
-  background-color: #45a049;
+  background-color: #163d6f;
+  border-color: #163d6f;
 }
 
 .submit-btn:disabled {
-  background-color: #ccc;
+  background-color: #d1d5db;
+  border-color: #d1d5db;
+  color: #9ca3af;
   cursor: not-allowed;
 }
 
 .cancel-btn {
-  background-color: #f44336;
+  background-color: #ef4444;
   color: white;
+  border-color: #ef4444;
 }
 
 .cancel-btn:hover {
-  background-color: #da190b;
+  background-color: #dc2626;
+  border-color: #dc2626;
 }
 
 .add-student-modal {
@@ -267,27 +281,25 @@
 .students-list {
   max-height: 400px;
   overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
-  background-color: #f9f9f9;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  background-color: #f9fafb;
 }
 
 .student-option {
   display: flex;
   align-items: center;
-  padding: 10px;
-  margin-bottom: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
   background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  border: 1px solid #e5e7eb;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
 }
 
 .student-option:hover {
-  background-color: #f0f7ff;
-  border-color: #2196F3;
+  background-color: #e8f1fb;
+  border-color: #1e5a9e;
 }
 
 .student-option input[type="radio"] {
@@ -302,20 +314,21 @@
 }
 
 .student-info strong {
-  color: #333;
-  font-size: 14px;
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
 .student-info small {
-  color: #666;
-  font-size: 12px;
-  margin-top: 2px;
+  color: #6b7280;
+  font-size: 0.813rem;
+  margin-top: 0.125rem;
 }
 
 .no-students {
-  padding: 20px;
+  padding: 1.5rem;
   text-align: center;
-  color: #666;
-  background-color: #f9f9f9;
-  border-radius: 5px;
+  color: #6b7280;
+  background-color: #f9fafb;
+  font-size: 0.875rem;
 }

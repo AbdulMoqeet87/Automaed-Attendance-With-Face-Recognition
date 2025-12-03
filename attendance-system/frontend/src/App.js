@@ -28,8 +28,20 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>AI-Powered Attendance Management System</h1>
-        <p className="subtitle">Face Recognition Based Attendance</p>
+        <div className="header-title">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="header-icon">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+            <path d="M12 2v5"/>
+            <path d="M12 17v5"/>
+            <path d="M5 10l-3 3 3 3"/>
+            <path d="M19 10l3 3-3 3"/>
+          </svg>
+          <div>
+            <h1>AI-Powered Attendance Management System</h1>
+            <p className="subtitle">Face Recognition Based Attendance</p>
+          </div>
+        </div>
         
         <nav className="nav-tabs">
           <button 
@@ -39,7 +51,7 @@ function App() {
               handleReset();
             }}
           >
-            📋 Take Attendance
+            Take Attendance
           </button>
           <button 
             className={`nav-tab ${currentView === 'courses' ? 'active' : ''}`}
@@ -48,7 +60,7 @@ function App() {
               handleReset();
             }}
           >
-            📚 Courses
+            Courses
           </button>
           <button 
             className={`nav-tab ${currentView === 'manage' ? 'active' : ''}`}
@@ -57,7 +69,7 @@ function App() {
               handleReset();
             }}
           >
-            👤 Manage Students
+            Manage Students
           </button>
           <button 
             className={`nav-tab ${currentView === 'history' ? 'active' : ''}`}
@@ -66,7 +78,7 @@ function App() {
               handleReset();
             }}
           >
-            📊 View History
+            View History
           </button>
         </nav>
       </header>

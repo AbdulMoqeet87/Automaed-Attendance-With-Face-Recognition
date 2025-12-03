@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { CameraIcon, UserIcon, InfoIcon, XIcon } from './Icons';
 import './StudentManagement.css';
 
 function StudentManagement() {
@@ -147,8 +148,10 @@ function StudentManagement() {
               style={{ display: 'none' }}
             />
             <label htmlFor="images" className="file-input-label">
-              <span className="upload-icon">📸</span>
-              {images.length === 0 ? 'Select Images' : `${images.length} image(s) selected`}
+              <CameraIcon size={20} />
+              <span style={{ marginLeft: '0.5rem' }}>
+                {images.length === 0 ? 'Select Images' : `${images.length} image(s) selected`}
+              </span>
             </label>
           </div>
 
@@ -162,7 +165,7 @@ function StudentManagement() {
                     className="remove-btn"
                     onClick={() => removeImage(index)}
                   >
-                    ×
+                    <XIcon size={16} color="white" />
                   </button>
                 </div>
               ))}
@@ -180,12 +183,18 @@ function StudentManagement() {
             className="btn btn-primary" 
             disabled={loading || images.length === 0}
           >
-            {loading ? 'Processing...' : 'Add Student'}
+            <UserIcon size={18} />
+            <span style={{ marginLeft: '0.5rem' }}>
+              {loading ? 'Processing...' : 'Add Student'}
+            </span>
           </button>
         </form>
 
         <div className="info-box">
-          <h3>📋 Instructions:</h3>
+          <h3>
+            <InfoIcon size={18} />
+            <span style={{ marginLeft: '0.5rem' }}>Instructions:</span>
+          </h3>
           <ul>
             <li>Enter unique student ID/roll number</li>
             <li>Select the year the student started their degree</li>

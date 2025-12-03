@@ -1,0 +1,66 @@
+/* Button icon styling for consistent display across all components */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-submit,
+.btn-download,
+.btn-reset,
+.btn-filter,
+.btn-clear,
+.create-course-btn,
+.add-student-btn,
+.back-btn,
+.submit-btn,
+.cancel-btn,
+.file-input-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem;
+}
+
+/* Ensure icons are vertically centered */
+.btn svg,
+.btn-primary svg,
+.btn-secondary svg,
+.btn-submit svg,
+.btn-download svg,
+.btn-reset svg,
+.btn-filter svg,
+.btn-clear svg,
+.create-course-btn svg,
+.add-student-btn svg,
+.back-btn svg,
+.submit-btn svg,
+.cancel-btn svg,
+.file-input-label svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Info box headings with icons */
+.info-box h3,
+h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Remove default margins for inline spans */
+.btn span,
+.btn-primary span,
+.btn-secondary span,
+.btn-submit span,
+.btn-download span,
+.btn-reset span,
+.btn-filter span,
+.btn-clear span,
+.create-course-btn span,
+.add-student-btn span,
+.back-btn span,
+.submit-btn span,
+.cancel-btn span,
+.file-input-label span {
+  display: inline-block;
+  margin: 0;
+}
