@@ -12,50 +12,56 @@ const Courses = () => {
   const [error, setError] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
-  const [newCourse, setNewCourse] = useState({ course_code: '', course_name: '' });
+  
+  // initial course data
+  const [newCourse, setNewCourse] = useState({ 
+    course_code: '', 
+    course_name: '' 
+  });
 
-  // Fetch all courses on component mount
+  // load courses right away
   useEffect(() => {
     fetchCourses();
   }, []);
 
-  const fetchCourses = async () => {
+  async function fetchCourses() {
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await axios.get(`${API_URL}/api/courses`);
       setCourses(response.data);
       setError('');
     } catch (err) {
+      // something went wrong
       setError('Failed to fetch courses: ' + (err.response?.data?.error || err.message));
-    } finally {
-      setLoading(false);
     }
-  };
+    setLoading(false);
+  }
 
   const handleCreateCourse = async (e) => {
     e.preventDefault();
     
+    // need both fields filled
     if (!newCourse.course_code || !newCourse.course_name) {
       setError('Course code and name are required');
       return;
     }
 
+    setLoading(true);
     try {
-      setLoading(true);
       await axios.post(`${API_URL}/api/courses`, {
         course_code: newCourse.course_code.trim(),
         course_name: newCourse.course_name.trim()
       });
       
+      // reset form and close modal
       setNewCourse({ course_code: '', course_name: '' });
       setShowCreateModal(false);
       fetchCourses();
       setError('');
     } catch (err) {
       setError('Failed to create course: ' + (err.response?.data?.error || err.message));
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   const handleCourseClick = async (course) => {

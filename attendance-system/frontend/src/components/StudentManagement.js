@@ -14,11 +14,13 @@ function StudentManagement() {
   const [message, setMessage] = useState({ type: '', text: '' });
 
   const currentYear = new Date().getFullYear();
+  // generate year options for dropdown
   const yearOptions = Array.from({length: 10}, (_, i) => currentYear - i);
 
-  const handleImageSelect = (e) => {
+  function handleImageSelect(e) {
     const files = Array.from(e.target.files);
     
+    // too many images?
     if (files.length > 5) {
       setMessage({ type: 'error', text: 'Maximum 5 images allowed' });
       return;
@@ -26,15 +28,16 @@ function StudentManagement() {
 
     setImages(files);
     
-    // Create previews
+    // show previews
     const previews = files.map(file => URL.createObjectURL(file));
     setImagePreviews(previews);
     setMessage({ type: '', text: '' });
-  };
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
+    // validation checks
     if (!studentId.trim() || !studentName.trim() || !degreeYear.trim()) {
       setMessage({ type: 'error', text: 'Please enter student ID, name, and degree year' });
       return;
@@ -54,6 +57,7 @@ function StudentManagement() {
       formData.append('name', studentName);
       formData.append('degree_year', degreeYear);
       
+      // add all images to form
       images.forEach((image) => {
         formData.append('images', image);
       });
@@ -66,7 +70,7 @@ function StudentManagement() {
 
       setMessage({ type: 'success', text: response.data.message });
       
-      // Reset form
+      // clear everything
       setStudentId('');
       setStudentName('');
       setDegreeYear('');
@@ -81,13 +85,11 @@ function StudentManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const removeImage = (index) => {
-    const newImages = images.filter((_, i) => i !== index);
-    const newPreviews = imagePreviews.filter((_, i) => i !== index);
-    setImages(newImages);
-    setImagePreviews(newPreviews);
+    setImages(images.filter((_, i) => i !== index));
+    setImagePreviews(imagePreviews.filter((_, i) => i !== index));
   };
 
   return (

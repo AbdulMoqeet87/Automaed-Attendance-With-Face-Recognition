@@ -15,6 +15,7 @@ function AttendanceHistory() {
     setLoading(true);
     try {
       const params = {};
+      // add filters if they exist
       if (filterClass) params.class_name = filterClass;
       if (filterDate) params.date = filterDate;
 
@@ -22,29 +23,29 @@ function AttendanceHistory() {
       setHistory(response.data);
     } catch (error) {
       console.error('Error fetching history:', error);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }, [filterClass, filterDate]);
 
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
 
-  const handleFilter = (e) => {
+  function handleFilter(e) {
     e.preventDefault();
     fetchHistory();
-  };
+  }
 
   const clearFilters = () => {
     setFilterClass('');
     setFilterDate('');
-    setTimeout(fetchHistory, 100);
+    setTimeout(fetchHistory, 100); // small delay to let state update
   };
 
-  const toggleRecord = (index) => {
+  // toggle showing details for a record
+  function toggleRecord(index) {
     setExpandedRecord(expandedRecord === index ? null : index);
-  };
+  }
 
   return (
     <div className="attendance-history">

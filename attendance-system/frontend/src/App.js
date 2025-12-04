@@ -7,23 +7,24 @@ import AttendanceHistory from './components/AttendanceHistory';
 import Courses from './components/Courses';
 
 function App() {
-  const [currentView, setCurrentView] = useState('attendance'); // 'attendance', 'manage', 'history', or 'courses'
+  // keeping track of which tab we're on
+  const [currentView, setCurrentView] = useState('attendance');
   const [attendanceData, setAttendanceData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleAttendanceProcessed = (data) => {
+  // when attendance processing is done
+  function handleAttendanceProcessed(data) {
     setAttendanceData(data);
     setLoading(false);
-  };
+  }
 
-  const handleLoadingStart = () => {
-    setLoading(true);
-  };
+  const handleLoadingStart = () => setLoading(true);
 
-  const handleReset = () => {
+  // reset everything back to initial state
+  function handleReset() {
     setAttendanceData(null);
     setLoading(false);
-  };
+  }
 
   return (
     <div className="App">

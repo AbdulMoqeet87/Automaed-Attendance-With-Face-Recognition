@@ -11,39 +11,39 @@ function ImageUpload({ onAttendanceProcessed, onLoadingStart }) {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
 
-  // Fetch available courses on component mount
+  // grab courses when component loads
   useEffect(() => {
-    const fetchCourses = async () => {
+    async function fetchCourses() {
       try {
         const response = await axios.get(`${API_URL}/api/courses`);
         setCourses(response.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
       }
-    };
+    }
     fetchCourses();
   }, []);
 
-  const handleImageSelect = (e) => {
+  function handleImageSelect(e) {
     const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setError('Please select a valid image file (JPEG/PNG)');
-        return;
-      }
+    if (!file) return;
 
-      // Validate file size (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        setError('Image size should be less than 10MB');
-        return;
-      }
-
-      setSelectedImage(file);
-      setPreview(URL.createObjectURL(file));
-      setError('');
+    // make sure it's actually an image
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file (JPEG/PNG)');
+      return;
     }
-  };
+
+    // don't want massive files
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Image size should be less than 10MB');
+      return;
+    }
+
+    setSelectedImage(file);
+    setPreview(URL.createObjectURL(file));
+    setError('');
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
