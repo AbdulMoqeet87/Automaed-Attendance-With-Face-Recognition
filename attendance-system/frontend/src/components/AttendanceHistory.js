@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import Papa from 'papaparse';
 import API_URL from '../config';
-import { SearchIcon, XIcon } from './Icons';
+import { SearchIcon, XIcon, DownloadIcon } from './Icons';
 import './AttendanceHistory.css';
 
 function AttendanceHistory() {
@@ -45,6 +46,46 @@ function AttendanceHistory() {
   // toggle showing details for a record
   function toggleRecord(index) {
     setExpandedRecord(expandedRecord === index ? null : index);
+  }
+
+  // download CSV for a specific record
+  function downloadRecordCSV(record) {
+    const csvData = [
+      ['Class Name', record.class_name],
+      ['Date & Time', new Date(record.timestamp).toLocaleString()],
+      [''],
+      ['Student ID', 'Student Name', 'Status'],
+    ];
+
+    // add present students
+    if (record.present && record.present.length > 0) {
+      record.present.forEach(student => {
+        if (typeof student === 'string') {
+          csvData.push([student, '', 'Present']);
+        } else {
+          csvData.push([student.student_id, student.name, 'Present']);
+        }
+      });
+    }
+
+    // add absent students
+    if (record.absent && record.absent.length > 0) {
+      record.absent.forEach(student => {
+        if (typeof student === 'string') {
+          csvData.push([student, '', 'Absent']);
+        } else {
+          csvData.push([student.student_id, student.name, 'Absent']);
+        }
+      });
+    }
+
+    const csv = Papa.unparse(csvData);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `attendance_${record.class_name}_${new Date(record.timestamp).toISOString().split('T')[0]}.csv`;
+    a.click();
   }
 
   return (
@@ -105,6 +146,16 @@ function AttendanceHistory() {
                       <span className="stat unrecognized">? {record.unrecognized_count} Unknown</span>
                     )}
                   </div>
+                  <button 
+                    className="btn-download-csv"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      downloadRecordCSV(record);
+                    }}
+                    title="Download CSV"
+                  >
+                    <DownloadIcon size={16} />
+                  </button>
                   <span className="expand-icon">{expandedRecord === index ? '▲' : '▼'}</span>
                 </div>
 

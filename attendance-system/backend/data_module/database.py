@@ -236,12 +236,49 @@ class Database:
             {'_id': 0}
         ).sort('timestamp', -1).limit(100))
         
-        # Convert datetime objects to ISO format strings
+        # enrich with student names
         for record in records:
+            # Convert datetime objects to ISO format strings
             if 'timestamp' in record and isinstance(record['timestamp'], datetime):
                 record['timestamp'] = record['timestamp'].isoformat()
             if 'created_at' in record and isinstance(record['created_at'], datetime):
                 record['created_at'] = record['created_at'].isoformat()
+            
+            # add student names to present list
+            if 'present' in record and isinstance(record['present'], list):
+                enriched_present = []
+                for item in record['present']:
+                    if isinstance(item, str):
+                        # it's just a student ID, get the name
+                        student = self.get_student_by_id(item)
+                        if student:
+                            enriched_present.append({
+                                'student_id': item,
+                                'name': student.get('name', 'Unknown')
+                            })
+                        else:
+                            enriched_present.append({'student_id': item, 'name': 'Unknown'})
+                    else:
+                        # already has name
+                        enriched_present.append(item)
+                record['present'] = enriched_present
+            
+            # add student names to absent list
+            if 'absent' in record and isinstance(record['absent'], list):
+                enriched_absent = []
+                for item in record['absent']:
+                    if isinstance(item, str):
+                        student = self.get_student_by_id(item)
+                        if student:
+                            enriched_absent.append({
+                                'student_id': item,
+                                'name': student.get('name', 'Unknown')
+                            })
+                        else:
+                            enriched_absent.append({'student_id': item, 'name': 'Unknown'})
+                    else:
+                        enriched_absent.append(item)
+                record['absent'] = enriched_absent
         
         return records
     

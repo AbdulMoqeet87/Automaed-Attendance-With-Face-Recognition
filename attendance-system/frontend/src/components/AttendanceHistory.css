@@ -153,6 +153,24 @@
   margin-right: 1rem;
 }
 
+.btn-download-csv {
+  padding: 0.5rem;
+  background: #1e5a9e;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-right: 1rem;
+}
+
+.btn-download-csv:hover {
+  background: #163d6f;
+  transform: scale(1.05);
+}
+
 .stat {
   padding: 0.375rem 0.75rem;
   font-size: 0.813rem;

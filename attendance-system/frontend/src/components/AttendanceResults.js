@@ -23,8 +23,8 @@ function AttendanceResults({ data, onReset }) {
       ['Date & Time', new Date(timestamp).toLocaleString()],
       [''],
       ['Student ID', 'Student Name', 'Status'],
-      ...present.map(student => [student.student_id, student.name, 'Present (Auto)']),
-      ...manuallyMarked.map(student => [student.student_id, student.name, 'Present (Manual)']),
+      ...present.map(student => [student.student_id, student.name, 'Present']),
+      ...manuallyMarked.map(student => [student.student_id, student.name, 'Present']),
       ...absent.filter(student => !manuallyMarked.some(m => m.student_id === student.student_id)).map(student => [student.student_id, student.name, 'Absent']),
     ];
 
