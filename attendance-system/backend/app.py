@@ -11,22 +11,18 @@ CORS(app)
 
 # Configuration
 app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB max file size
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-# Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Initialize controller
 attendance_controller = AttendanceController()
 
 def allowed_file(filename):
-    """Check if file extension is allowed"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat()
@@ -64,7 +60,6 @@ def manage_courses():
 
 @app.route('/api/courses/<course_code>/students', methods=['GET', 'POST'])
 def manage_course_students(course_code):
-    """Get students in a course or enroll a student"""
     if request.method == 'GET':
         try:
             students = attendance_controller.get_students_in_course(course_code)
@@ -90,7 +85,6 @@ def manage_course_students(course_code):
 
 @app.route('/api/students', methods=['GET'])
 def get_all_students_filtered():
-    """Get all students, optionally filtered by degree year"""
     try:
         degree_year = request.args.get('degree_year')
         students = attendance_controller.get_students_by_year(degree_year)
@@ -102,13 +96,7 @@ def get_all_students_filtered():
 
 @app.route('/api/process-attendance', methods=['POST'])
 def process_attendance():
-    """
-    Main endpoint to process attendance from uploaded classroom image
-    Expects: multipart/form-data with 'image' file and 'course_code' string
-    Returns: JSON with attendance results
-    """
     try:
-        # Validate request
         if 'image' not in request.files:
             return jsonify({'error': 'No image file provided'}), 400
         
@@ -118,7 +106,6 @@ def process_attendance():
         file = request.files['image']
         course_code = request.form['course_code']
         
-        # Validate file
         if file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
         
@@ -132,11 +119,7 @@ def process_attendance():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         file.save(filepath)
         
-        # Process attendance
         result = attendance_controller.process_attendance(filepath, course_code)
-        
-        # Clean up uploaded file (optional - you may want to keep it)
-        # os.remove(filepath)
         
         return jsonify(result), 200
         
@@ -146,13 +129,7 @@ def process_attendance():
 
 @app.route('/api/students/add', methods=['POST'])
 def add_student_with_images():
-    """
-    Add a new student globally with face images
-    Expects: multipart/form-data with 'student_id', 'name', 'degree_year', and 'images' files
-    Returns: JSON with success message
-    """
     try:
-        # Validate request
         if 'student_id' not in request.form or 'name' not in request.form or 'degree_year' not in request.form:
             return jsonify({'error': 'Student ID, name, and degree year are required'}), 400
         
@@ -171,7 +148,6 @@ def add_student_with_images():
         if len(files) > 5:
             return jsonify({'error': 'Maximum 5 images allowed'}), 400
         
-        # Process images and generate embeddings
         from ml_module.face_recognizer import FaceRecognizer
         import cv2
         import numpy as np
@@ -186,7 +162,6 @@ def add_student_with_images():
                 continue
             
             try:
-                # Read image from file
                 file_bytes = np.frombuffer(file.read(), np.uint8)
                 img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
                 
@@ -194,19 +169,16 @@ def add_student_with_images():
                     errors.append(f"Image {idx + 1}: Could not read image")
                     continue
                 
-                # Detect faces
                 faces = recognizer.detect_faces(img)
                 
                 if len(faces) == 0:
                     errors.append(f"Image {idx + 1}: No face detected")
                     continue
                 
-                # Use the largest face
                 largest_face = max(faces, key=lambda f: f[2] * f[3])
                 x, y, w, h = largest_face
                 face_img = img[y:y+h, x:x+w]
                 
-                # Generate embedding
                 embedding = recognizer.generate_embedding(face_img)
                 embeddings.append(embedding)
                 
@@ -214,12 +186,10 @@ def add_student_with_images():
                 errors.append(f"Image {idx + 1}: {str(e)}")
                 continue
         
-        # Check if we got any valid embeddings
         if len(embeddings) == 0:
             error_msg = 'No valid face embeddings generated. ' + '; '.join(errors)
             return jsonify({'error': error_msg}), 400
         
-        # Add student to database
         result = attendance_controller.add_student({
             'student_id': student_id,
             'name': name,
@@ -246,10 +216,6 @@ def add_student_with_images():
 
 @app.route('/api/students', methods=['POST'])
 def add_student():
-    """
-    Add a new student with their face embeddings
-    Expects: JSON with student_id, name, and image(s)
-    """
     try:
         data = request.get_json()
         result = attendance_controller.add_student(data)
@@ -261,7 +227,6 @@ def add_student():
 def submit_attendance():
     """
     Submit and save attendance record to database
-    Expects: JSON with class_name, timestamp, present, absent, unrecognized_count
     """
     try:
         data = request.get_json()
@@ -269,7 +234,6 @@ def submit_attendance():
         if not data or 'class_name' not in data:
             return jsonify({'error': 'Class name is required'}), 400
         
-        # Store attendance record
         result = attendance_controller.submit_attendance(data)
         
         return jsonify({
@@ -284,7 +248,6 @@ def submit_attendance():
 
 @app.route('/api/attendance/history', methods=['GET'])
 def get_attendance_history():
-    """Get attendance history"""
     try:
         class_name = request.args.get('class_name')
         date = request.args.get('date')
@@ -296,12 +259,10 @@ def get_attendance_history():
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
-    """Handle file too large error"""
     return jsonify({'error': 'File too large. Maximum size is 10MB'}), 413
 
 @app.errorhandler(500)
 def internal_server_error(error):
-    """Handle internal server errors"""
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':

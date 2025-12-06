@@ -1,8 +1,3 @@
-"""
-Script to initialize the database with sample student data
-Run this after setting up MongoDB
-"""
-
 from data_module.database import Database
 
 def main():

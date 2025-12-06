@@ -301,17 +301,6 @@ attendance-system/
 
 ---
 
-## Contributing
-
-This is an academic project developed for the Software Engineering course at Information Technology University (ITU).
-
----
-
-## License
-
-This project is created for educational purposes as part of academic coursework.
-
----
 
 ## Contact
 
